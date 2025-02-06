@@ -88,7 +88,7 @@ Resources:
       MasterUserPassword: admin12345
       VPCSecurityGroups:
         - !ImportValue equipo3-SG-RDS-ID
-      DBSubnetGroupName: !ImportValue equipo3-RDS-SubnetGroup-ID
+      DBSubnetGroupName: !ImportValue equipo3-RDS-SubnetPrivate2-ID
       MultiAZ: true
       PubliclyAccessible: false
       StorageType: gp2
