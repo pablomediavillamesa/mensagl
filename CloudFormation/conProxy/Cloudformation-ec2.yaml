@@ -72,10 +72,12 @@ Resources:
       SubnetId: !ImportValue equipo3-SubnetPrivate2-ID
       SecurityGroupIds:
         - !ImportValue equipo3-SG-CMS-ID
+        - !ImportValue equipo3-SG-RDS-ID  # Asegura que CMS pueda hablar con RDS
       PrivateIpAddress: 10.0.4.10
       Tags:
         - Key: Name
           Value: "equipo3-az2-cms"
+
 
   RDSDatabase:
     Type: AWS::RDS::DBInstance

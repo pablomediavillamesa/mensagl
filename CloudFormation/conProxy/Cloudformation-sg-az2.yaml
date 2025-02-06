@@ -52,13 +52,13 @@ Resources:
   SecurityGroupRDS:
     Type: AWS::EC2::SecurityGroup
     Properties:
-      GroupDescription: "Security Group para la Base de Datos RDS en AZ2"
+      GroupDescription: "Security Group para la Base de Datos RDS"
       VpcId: !ImportValue equipo3-VPC-ID
       SecurityGroupIngress:
         - IpProtocol: tcp
           FromPort: 3306
           ToPort: 3306
-          SourceSecurityGroupId: !Ref SecurityGroupCMS  # Acceso desde el Servidor CMS
+          SourceSecurityGroupId: !ImportValue equipo3-SG-CMS-ID  # Permite tráfico desde CMS
       SecurityGroupEgress:
         - IpProtocol: -1
           CidrIp: 0.0.0.0/0
