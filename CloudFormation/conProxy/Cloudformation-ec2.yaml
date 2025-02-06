@@ -1,5 +1,5 @@
 AWSTemplateFormatVersion: "2010-09-09"
-Description: "Stack para la creación de instancias EC2"
+Description: "Stack para la creación de instancias EC2 y RDS"
 
 Parameters:
   KeyName:
@@ -19,7 +19,7 @@ Resources:
       PrivateIpAddress: 10.0.1.50
       Tags:
         - Key: Name
-          Value: "equipo3-proxy-az1"
+          Value: "equipo3-az1-proxy"
 
   EC2ProxyAZ2:
     Type: AWS::EC2::Instance
@@ -33,7 +33,7 @@ Resources:
       PrivateIpAddress: 10.0.2.50
       Tags:
         - Key: Name
-          Value: "equipo3-proxy-az2"
+          Value: "equipo3-az2-proxy"
 
   EC2Ejabberd:
     Type: AWS::EC2::Instance
@@ -47,7 +47,7 @@ Resources:
       PrivateIpAddress: 10.0.3.10
       Tags:
         - Key: Name
-          Value: "equipo3-ejabberd"
+          Value: "equipo3-az1-ejabberd"
 
   EC2PostgreSQL:
     Type: AWS::EC2::Instance
@@ -61,7 +61,7 @@ Resources:
       PrivateIpAddress: 10.0.3.100
       Tags:
         - Key: Name
-          Value: "equipo3-postgresql"
+          Value: "equipo3-az1-postgresql"
 
   EC2CMS:
     Type: AWS::EC2::Instance
@@ -75,7 +75,27 @@ Resources:
       PrivateIpAddress: 10.0.4.10
       Tags:
         - Key: Name
-          Value: "equipo3-cms"
+          Value: "equipo3-az2-cms"
+
+  RDSDatabase:
+    Type: AWS::RDS::DBInstance
+    Properties:
+      DBInstanceIdentifier: "equipo3-az2-rds"
+      AllocatedStorage: 20
+      DBInstanceClass: db.t3.micro
+      Engine: mysql
+      MasterUsername: admin
+      MasterUserPassword: admin12345
+      VPCSecurityGroups:
+        - !ImportValue equipo3-SG-RDS-ID
+      DBSubnetGroupName: !ImportValue equipo3-RDS-SubnetGroup-ID
+      MultiAZ: true
+      PubliclyAccessible: false
+      StorageType: gp2
+      BackupRetentionPeriod: 7
+      Tags:
+        - Key: Name
+          Value: "equipo3-az2-rds"
 
 Outputs:
   EC2ProxyAZ1Id:
@@ -107,3 +127,9 @@ Outputs:
     Value: !Ref EC2CMS
     Export:
       Name: "equipo3-EC2-CMS-ID"
+
+  RDSDatabaseId:
+    Description: "ID de la base de datos RDS"
+    Value: !Ref RDSDatabase
+    Export:
+      Name: "equipo3-RDS-Database-ID"
