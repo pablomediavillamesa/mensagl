@@ -118,7 +118,7 @@ Outputs:
     Description: "ID del Security Group del Proxy"
     Value: !Ref SecurityGroupProxy
     Export:
-      Name: "equipo3-SG-Proxy-ID"
+      Name: "equipo3-SG-Proxy-AZ1-ID"
 
   SecurityGroupEjabberdId:
     Description: "ID del Security Group de Ejabberd"
