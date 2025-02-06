@@ -67,6 +67,16 @@ Resources:
         - Key: Name
           Value: "equipo3-private-2"
 
+  SubnetDatabase:
+    Type: AWS::EC2::Subnet
+    Properties:
+      VpcId: !Ref VPC
+      CidrBlock: 10.0.5.0/24
+      AvailabilityZone: !Select [1, !GetAZs ""]
+      Tags:
+        - Key: Name
+          Value: "equipo3-db-subnet"
+
   NATGateway:
     Type: AWS::EC2::NatGateway
     Properties:
@@ -135,6 +145,12 @@ Resources:
       SubnetId: !Ref SubnetPrivate2
       RouteTableId: !Ref RouteTablePrivate
 
+  SubnetRouteTableAssociationDatabase:
+    Type: AWS::EC2::SubnetRouteTableAssociation
+    Properties:
+      SubnetId: !Ref SubnetDatabase
+      RouteTableId: !Ref RouteTablePrivate
+
 Outputs:
   VPCId:
     Description: "VPC ID"
@@ -165,3 +181,9 @@ Outputs:
     Value: !Ref SubnetPrivate2
     Export:
       Name: "equipo3-SubnetPrivate2-ID"
+
+  SubnetDatabaseId:
+    Description: "ID de la subred de base de datos"
+    Value: !Ref SubnetDatabase
+    Export:
+      Name: "equipo3-SubnetDatabase-ID"
