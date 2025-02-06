@@ -70,11 +70,11 @@ Resources:
           Value: "equipo3-sg-rds"
 
 Outputs:
-  SecurityGroupProxyAZ2Id:
-    Description: "ID del Security Group del Proxy en AZ2"
-    Value: !Ref SecurityGroupProxyAZ2
+  SecurityGroupCMSId:
+    Description: "ID del Security Group del Servidor CMS"
+    Value: !Ref SecurityGroupCMS
     Export:
-      Name: "equipo3-SG-Proxy-AZ2-ID"
+      Name: "equipo3-SG-CMS-ID"
 
   SecurityGroupCMSId:
     Description: "ID del Security Group del Servidor CMS"
