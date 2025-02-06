@@ -20,6 +20,9 @@ Resources:
           FromPort: 22
           ToPort: 22
           CidrIp: 0.0.0.0/0  # SSH
+      SecurityGroupEgress:
+        - IpProtocol: -1
+          CidrIp: 0.0.0.0/0
       Tags:
         - Key: Name
           Value: "equipo3-sg-proxy-az2"
@@ -79,7 +82,7 @@ Outputs:
     Export:
       Name: "equipo3-SG-CMS-ID"
 
-  SecurityGroupRDSId:
+  SecurityGroupRDSId: 
     Description: "ID del Security Group de la Base de Datos RDS"
     Value: !Ref SecurityGroupRDS
     Export:
