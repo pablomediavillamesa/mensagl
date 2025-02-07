@@ -84,7 +84,7 @@ Resources:
       InstanceType: t2.micro
       ImageId: ami-04b4f1a9cf54c11d0 # Ubuntu Server 24.04
       KeyName: !Ref KeyName
-      SubnetId: !ImportValue equipo3-DBSubnetGroup-ID
+      SubnetId: !ImportValue equipo3-SubnetPrivate2-ID
       SecurityGroupIds:
         - !ImportValue equipo3-SG-RDS-ID
       PrivateIpAddress: 10.0.4.20

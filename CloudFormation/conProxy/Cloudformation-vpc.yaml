@@ -68,37 +68,6 @@ Resources:
         - Key: Name
           Value: "equipo3-private-2"
 
-  SubnetDatabase1:
-    Type: AWS::EC2::Subnet
-    Properties:
-      VpcId: !Ref VPC
-      CidrBlock: 10.0.5.0/24
-      AvailabilityZone: !Select [0, !GetAZs ""]
-      Tags:
-        - Key: Name
-          Value: "equipo3-db-subnet-1"
-
-  SubnetDatabase2:
-    Type: AWS::EC2::Subnet
-    Properties:
-      VpcId: !Ref VPC
-      CidrBlock: 10.0.6.0/24
-      AvailabilityZone: !Select [1, !GetAZs ""]
-      Tags:
-        - Key: Name
-          Value: "equipo3-db-subnet-2"
-
-  DBSubnetGroup:
-    Type: AWS::RDS::DBSubnetGroup
-    Properties:
-      DBSubnetGroupDescription: "Grupo de subredes para RDS"
-      SubnetIds:
-        - !Ref SubnetDatabase1
-        - !Ref SubnetDatabase2
-      Tags:
-        - Key: Name
-          Value: "equipo3-db-subnet-group"
-
   NATGateway:
     Type: AWS::EC2::NatGateway
     Properties:
@@ -143,18 +112,6 @@ Resources:
       DestinationCidrBlock: 0.0.0.0/0
       NatGatewayId: !Ref NATGateway
 
-  SubnetRouteTableAssociationDatabase1:
-    Type: AWS::EC2::SubnetRouteTableAssociation
-    Properties:
-      SubnetId: !Ref SubnetDatabase1
-      RouteTableId: !Ref RouteTablePrivate
-
-  SubnetRouteTableAssociationDatabase2:
-    Type: AWS::EC2::SubnetRouteTableAssociation
-    Properties:
-      SubnetId: !Ref SubnetDatabase2
-      RouteTableId: !Ref RouteTablePrivate
-
 Outputs:
   VPCId:
     Description: "VPC ID"
@@ -185,12 +142,6 @@ Outputs:
     Value: !Ref SubnetPrivate2
     Export:
       Name: "equipo3-SubnetPrivate2-ID"
-
-  DBSubnetGroupId:
-    Description: "ID del grupo de subredes para RDS"
-    Value: !Ref DBSubnetGroup
-    Export:
-      Name: "equipo3-DBSubnetGroup-ID"
 
   NatGatewayId:
     Description: "ID del NAT Gateway"
