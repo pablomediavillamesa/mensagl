@@ -24,8 +24,7 @@ Resources:
     Properties:
       VpcId: !Ref VPC
       InternetGatewayId: !Ref InternetGateway
-    DependsOn: InternetGateway  # Se asegura de que se cree antes de adjuntar
-
+    DependsOn: InternetGateway
 
   SubnetPublic1:
     Type: AWS::EC2::Subnet
@@ -69,23 +68,33 @@ Resources:
         - Key: Name
           Value: "equipo3-private-2"
 
-  SubnetDatabase:
+  SubnetDatabase1:
     Type: AWS::EC2::Subnet
     Properties:
       VpcId: !Ref VPC
       CidrBlock: 10.0.5.0/24
+      AvailabilityZone: !Select [0, !GetAZs ""]
+      Tags:
+        - Key: Name
+          Value: "equipo3-db-subnet-1"
+
+  SubnetDatabase2:
+    Type: AWS::EC2::Subnet
+    Properties:
+      VpcId: !Ref VPC
+      CidrBlock: 10.0.6.0/24
       AvailabilityZone: !Select [1, !GetAZs ""]
       Tags:
         - Key: Name
-          Value: "equipo3-db-subnet"
+          Value: "equipo3-db-subnet-2"
 
   DBSubnetGroup:
     Type: AWS::RDS::DBSubnetGroup
     Properties:
       DBSubnetGroupDescription: "Grupo de subredes para RDS"
       SubnetIds:
-        - !Ref SubnetPrivate1  # Asegúrate de que son subredes privadas
-        - !Ref SubnetPrivate2
+        - !Ref SubnetDatabase1
+        - !Ref SubnetDatabase2
       Tags:
         - Key: Name
           Value: "equipo3-db-subnet-group"
@@ -134,69 +143,14 @@ Resources:
       DestinationCidrBlock: 0.0.0.0/0
       NatGatewayId: !Ref NATGateway
 
-  SubnetRouteTableAssociationPublic1:
+  SubnetRouteTableAssociationDatabase1:
     Type: AWS::EC2::SubnetRouteTableAssociation
     Properties:
-      SubnetId: !Ref SubnetPublic1
-      RouteTableId: !Ref RouteTablePublic
-
-  SubnetRouteTableAssociationPublic2:
-    Type: AWS::EC2::SubnetRouteTableAssociation
-    Properties:
-      SubnetId: !Ref SubnetPublic2
-      RouteTableId: !Ref RouteTablePublic
-
-  SubnetRouteTableAssociationPrivate1:
-    Type: AWS::EC2::SubnetRouteTableAssociation
-    Properties:
-      SubnetId: !Ref SubnetPrivate1
+      SubnetId: !Ref SubnetDatabase1
       RouteTableId: !Ref RouteTablePrivate
 
-  SubnetRouteTableAssociationPrivate2:
+  SubnetRouteTableAssociationDatabase2:
     Type: AWS::EC2::SubnetRouteTableAssociation
     Properties:
-      SubnetId: !Ref SubnetPrivate2
+      SubnetId: !Ref SubnetDatabase2
       RouteTableId: !Ref RouteTablePrivate
-
-  SubnetRouteTableAssociationDatabase:
-    Type: AWS::EC2::SubnetRouteTableAssociation
-    Properties:
-      SubnetId: !Ref SubnetDatabase
-      RouteTableId: !Ref RouteTablePrivate
-
-Outputs:
-  VPCId:
-    Description: "VPC ID"
-    Value: !Ref VPC
-    Export:
-      Name: "equipo3-VPC-ID"
-
-  SubnetPublic1Id:
-    Description: "ID de la subred pública 1"
-    Value: !Ref SubnetPublic1
-    Export:
-      Name: "equipo3-SubnetPublic1-ID"
-
-  SubnetPublic2Id:
-    Description: "ID de la subred pública 2"
-    Value: !Ref SubnetPublic2
-    Export:
-      Name: "equipo3-SubnetPublic2-ID"
-
-  SubnetPrivate1Id:
-    Description: "ID de la subred privada 1"
-    Value: !Ref SubnetPrivate1
-    Export:
-      Name: "equipo3-SubnetPrivate1-ID"
-
-  SubnetPrivate2Id:
-    Description: "ID de la subred privada 2"
-    Value: !Ref SubnetPrivate2
-    Export:
-      Name: "equipo3-SubnetPrivate2-ID"
-
-  SubnetDatabaseId:
-    Description: "ID de la subred de base de datos"
-    Value: !Ref SubnetDatabase
-    Export:
-      Name: "equipo3-SubnetDatabase-ID"
