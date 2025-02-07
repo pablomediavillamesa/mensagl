@@ -61,7 +61,7 @@ Resources:
         - IpProtocol: tcp
           FromPort: 3306
           ToPort: 3306
-          SourceSecurityGroupId: !ImportValue equipo3-SG-CMS-ID  # Permite tráfico desde CMS
+          SourceSecurityGroupId: !Ref SecurityGroupCMS  # Permite tráfico desde CMS
       SecurityGroupEgress:
         - IpProtocol: -1
           CidrIp: 0.0.0.0/0
@@ -70,20 +70,20 @@ Resources:
           Value: "equipo3-sg-rds"
 
 Outputs:
-  SecurityGroupCMSId:
-    Description: "ID del Security Group del Servidor CMS"
-    Value: !Ref SecurityGroupCMS
+  SecurityGroupProxyId:
+    Description: "ID del Security Group del Proxy"
+    Value: !Ref SecurityGroupProxyAZ2
     Export:
-      Name: "equipo3-SG-CMS-ID"
-
-  SecurityGroupCMSId:
-    Description: "ID del Security Group del Servidor CMS"
-    Value: !Ref SecurityGroupCMS
-    Export:
-      Name: "equipo3-SG-CMS-ID"
+      Name: "equipo3-SG-Proxy-AZ2-ID"
 
   SecurityGroupRDSId: 
     Description: "ID del Security Group de la Base de Datos RDS"
     Value: !Ref SecurityGroupRDS
     Export:
       Name: "equipo3-SG-RDS-ID"
+
+  SecurityGroupCMSId:
+    Description: "ID del Security Group del Servidor CMS"
+    Value: !Ref SecurityGroupCMS
+    Export:
+      Name: "equipo3-SG-CMS-ID"
