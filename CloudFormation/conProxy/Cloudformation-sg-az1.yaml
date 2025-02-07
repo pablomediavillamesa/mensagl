@@ -2,7 +2,7 @@ AWSTemplateFormatVersion: "2010-09-09"
 Description: "Stack para la creación de Security Groups"
 
 Resources:
-  SecurityGroupProxyAZ1:
+  ecurityGroupProxyAZ1:
     Type: AWS::EC2::SecurityGroup
     Properties:
       GroupDescription: "Security Group para el Proxy Inverso"
@@ -63,31 +63,31 @@ Resources:
         - IpProtocol: tcp
           FromPort: 80
           ToPort: 80
-          SourceSecurityGroupId: !Ref SecurityGroupProxy  # HTTP
+          SourceSecurityGroupId: !Ref ecurityGroupProxyAZ1  # HTTP
         - IpProtocol: tcp
           FromPort: 22
           ToPort: 22
-          SourceSecurityGroupId: !Ref SecurityGroupProxy  # SSH
+          SourceSecurityGroupId: !Ref ecurityGroupProxyAZ1  # SSH
         - IpProtocol: tcp
           FromPort: 5222
           ToPort: 5222
-          SourceSecurityGroupId: !Ref SecurityGroupProxy  # XMPP cliente
+          SourceSecurityGroupId: !Ref ecurityGroupProxyAZ1  # XMPP cliente
         - IpProtocol: tcp
           FromPort: 5269
           ToPort: 5269
-          SourceSecurityGroupId: !Ref SecurityGroupProxy  # XMPP interservidores
+          SourceSecurityGroupId: !Ref ecurityGroupProxyAZ1  # XMPP interservidores
         - IpProtocol: tcp
           FromPort: 5280
           ToPort: 5280
-          SourceSecurityGroupId: !Ref SecurityGroupProxy  # Administración HTTP
+          SourceSecurityGroupId: !Ref ecurityGroupProxyAZ1  # Administración HTTP
         - IpProtocol: tcp
           FromPort: 5281
           ToPort: 5281
-          SourceSecurityGroupId: !Ref SecurityGroupProxy  # Administración HTTPS
+          SourceSecurityGroupId: !Ref ecurityGroupProxyAZ1  # Administración HTTPS
         - IpProtocol: tcp
           FromPort: 5443
           ToPort: 5443
-          SourceSecurityGroupId: !Ref SecurityGroupProxy  # WebSockets HTTPS para XMPP
+          SourceSecurityGroupId: !Ref ecurityGroupProxyAZ1  # WebSockets HTTPS para XMPP
       SecurityGroupEgress:
         # Permitir tráfico saliente desde Ejabberd hacia Internet (a través del NAT Gateway)
         - IpProtocol: -1
@@ -114,9 +114,9 @@ Resources:
           Value: "equipo3-sg-postgresql"
 
 Outputs:
-  SecurityGroupProxyId:
+  ecurityGroupProxyAZ1Id:
     Description: "ID del Security Group del Proxy"
-    Value: !Ref SecurityGroupProxyAZ1
+    Value: !Ref ecurityGroupProxyAZ1
     Export:
       Name: "equipo3-SG-Proxy-AZ1-ID"
 

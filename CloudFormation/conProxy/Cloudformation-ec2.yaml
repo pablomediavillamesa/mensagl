@@ -4,7 +4,7 @@ Description: "Stack para la creación de instancias EC2 y RDS"
 Parameters:
   KeyName:
     Type: String
-    Description: "Nombre del par de claves SSH"
+    Description: "mensagl"
 
 Resources:
   EC2ProxyAZ1:
