@@ -78,22 +78,16 @@ Resources:
         - Key: Name
           Value: "equipo3-az2-cms"
 
-
   RDSDatabase:
-    Type: AWS::RDS::DBInstance
+    Type: AWS::EC2::Instance
     Properties:
-      DBInstanceIdentifier: "equipo3-az2-rds"
-      AllocatedStorage: 20
-      DBInstanceClass: db.t3.micro
-      Engine: mysql
-      MasterUsername: admin
-      MasterUserPassword: admin12345
-      VPCSecurityGroups:
+      InstanceType: t2.micro
+      ImageId: ami-04b4f1a9cf54c11d0 # Ubuntu Server 24.04
+      KeyName: !Ref KeyName
+      SecurityGroupIds:
         - !ImportValue equipo3-SG-RDS-ID
-      DBSubnetGroupName: !ImportValue equipo3-DBSubnetGroup-ID
-      MultiAZ: true
-      PubliclyAccessible: false
-      StorageType: gp2
+      SubnetId: !ImportValue equipo3-DBSubnetGroup-ID
+      PrivateIpAddress: 10.0.4.20
       BackupRetentionPeriod: 7
       Tags:
         - Key: Name
