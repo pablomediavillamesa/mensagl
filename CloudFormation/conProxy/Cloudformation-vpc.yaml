@@ -72,16 +72,23 @@ Resources:
   SubnetDatabase:
     Type: AWS::EC2::Subnet
     Properties:
-      DBSubnetGroupDescription: "Grupo de subredes para RDS"
-        SubnetIds:
-          - !Ref SubnetPrivate1  # Asegúrate de que estas son las subredes correctas
-          - !Ref SubnetPrivate2
       VpcId: !Ref VPC
       CidrBlock: 10.0.5.0/24
       AvailabilityZone: !Select [1, !GetAZs ""]
       Tags:
         - Key: Name
           Value: "equipo3-db-subnet"
+
+  DBSubnetGroup:
+    Type: AWS::RDS::DBSubnetGroup
+    Properties:
+      DBSubnetGroupDescription: "Grupo de subredes para RDS"
+      SubnetIds:
+        - !Ref SubnetPrivate1  # Asegúrate de que son subredes privadas
+        - !Ref SubnetPrivate2
+      Tags:
+        - Key: Name
+          Value: "equipo3-db-subnet-group"
 
   NATGateway:
     Type: AWS::EC2::NatGateway
