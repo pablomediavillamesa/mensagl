@@ -154,3 +154,46 @@ Resources:
     Properties:
       SubnetId: !Ref SubnetDatabase2
       RouteTableId: !Ref RouteTablePrivate
+
+Outputs:
+  VPCId:
+    Description: "VPC ID"
+    Value: !Ref VPC
+    Export:
+      Name: "equipo3-VPC-ID"
+
+  SubnetPublic1Id:
+    Description: "ID de la subred pública 1"
+    Value: !Ref SubnetPublic1
+    Export:
+      Name: "equipo3-SubnetPublic1-ID"
+
+  SubnetPublic2Id:
+    Description: "ID de la subred pública 2"
+    Value: !Ref SubnetPublic2
+    Export:
+      Name: "equipo3-SubnetPublic2-ID"
+
+  SubnetPrivate1Id:
+    Description: "ID de la subred privada 1"
+    Value: !Ref SubnetPrivate1
+    Export:
+      Name: "equipo3-SubnetPrivate1-ID"
+
+  SubnetPrivate2Id:
+    Description: "ID de la subred privada 2"
+    Value: !Ref SubnetPrivate2
+    Export:
+      Name: "equipo3-SubnetPrivate2-ID"
+
+  DBSubnetGroupId:
+    Description: "ID del grupo de subredes para RDS"
+    Value: !Ref DBSubnetGroup
+    Export:
+      Name: "equipo3-DBSubnetGroup-ID"
+
+  NatGatewayId:
+    Description: "ID del NAT Gateway"
+    Value: !Ref NATGateway
+    Export:
+      Name: "equipo3-NATGateway-ID"
