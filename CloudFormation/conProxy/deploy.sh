@@ -84,18 +84,19 @@ echo "Security Groups creados exitosamente."
 
 echo ""
 
-# 6️ Crear las instancias EC2
-echo "Creando las instancias EC2 ($STACK_INSTANCES)..."
-aws cloudformation create-stack --stack-name "$STACK_INSTANCES" --template-body file://$INSTANCES_FILE --capabilities CAPABILITY_NAMED_IAM --parameters ParameterKey=KeyName,ParameterValue=$KEY_NAME
-aws cloudformation wait stack-create-complete --stack-name "$STACK_INSTANCES"
-echo "Instancias EC2 creadas exitosamente."
-
-echo ""
-
 # 7 Creando las instancias RDS
 echo "Creando las instancias RDS ($STACK_RDS)..."
 aws cloudformation create-stack --stack-name "$STACK_RDS" --template-body file://$RDS_FILE --capabilities CAPABILITY_NAMED_IAM 
 aws cloudformation wait stack-create-complete --stack-name "$STACK_RDS"
 echo "Instancia RDS Creada exitosamente"
 
+echo ""
+
+# 6️ Crear las instancias EC2
+echo "Creando las instancias EC2 ($STACK_INSTANCES)..."
+aws cloudformation create-stack --stack-name "$STACK_INSTANCES" --template-body file://$INSTANCES_FILE --capabilities CAPABILITY_NAMED_IAM --parameters ParameterKey=KeyName,ParameterValue=$KEY_NAME
+aws cloudformation wait stack-create-complete --stack-name "$STACK_INSTANCES"
+echo "Instancias EC2 creadas exitosamente."
+
 echo "Infraestructura desplegada con éxito."
+
