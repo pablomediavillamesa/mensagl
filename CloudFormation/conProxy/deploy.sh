@@ -3,8 +3,7 @@
 set -e  # Detener la ejecución en caso de error
 
 STACK_VPC="equipo3-vpc"
-STACK_SG_AZ1="equipo3-sg-az1"
-STACK_SG_AZ2="equipo3-sg-az2"
+STACK_SG="equipo3-sg"
 STACK_INSTANCES="equipo3-instances"
 STACK_RDS="equipo3-rds"
 KEY_NAME="mensagl"
@@ -12,8 +11,7 @@ KEY_FILE="${KEY_NAME}.pem"
 
 # Directorios de los archivos YAML
 VPC_FILE="Cloudformation-vpc.yaml"
-SG_AZ1_FILE="Cloudformation-sg-az1.yaml"
-SG_AZ2_FILE="Cloudformation-sg-az2.yaml"
+SG_FILE="Cloudformation-sg.yaml"
 INSTANCES_FILE="Cloudformation-ec2.yaml"
 RDS_FILE="Cloudformation-rds.yaml"
 
@@ -50,15 +48,13 @@ echo ""
 if [ "$FORCE_REDEPLOY" = true ]; then
     echo "Eliminando stacks previos..."
     aws cloudformation delete-stack --stack-name "$STACK_INSTANCES"
-    aws cloudformation delete-stack --stack-name "$STACK_SG_AZ1"
-    aws cloudformation delete-stack --stack-name "$STACK_SG_AZ2"
+    aws cloudformation delete-stack --stack-name "$STACK_SG"
     aws cloudformation delete-stack --stack-name "$STACK_VPC"
     aws cloudformation delete-stack --stack-name "$STACK_RDS"
     
     echo "Esperando a que se eliminen los stacks..."
     aws cloudformation wait stack-delete-complete --stack-name "$STACK_INSTANCES" || true
-    aws cloudformation wait stack-delete-complete --stack-name "$STACK_SG_AZ1" || true
-    aws cloudformation wait stack-delete-complete --stack-name "$STACK_SG_AZ2" || true
+    aws cloudformation wait stack-delete-complete --stack-name "$STACK_SG" || true
     aws cloudformation wait stack-delete-complete --stack-name "$STACK_VPC" || true
     aws cloudformation wait stack-delete-complete --stack-name "$STACK_RDS" || true
     echo "Stacks eliminados."
@@ -76,10 +72,8 @@ echo ""
 
 # 5️ Crear los Security Groups
 echo "Creando los Security Groups en AZ1 y AZ2..."
-aws cloudformation create-stack --stack-name "$STACK_SG_AZ1" --template-body file://$SG_AZ1_FILE --capabilities CAPABILITY_NAMED_IAM
-aws cloudformation create-stack --stack-name "$STACK_SG_AZ2" --template-body file://$SG_AZ2_FILE --capabilities CAPABILITY_NAMED_IAM
-aws cloudformation wait stack-create-complete --stack-name "$STACK_SG_AZ1"
-aws cloudformation wait stack-create-complete --stack-name "$STACK_SG_AZ2"
+aws cloudformation create-stack --stack-name "$STACK_SG_AZ1" --template-body file://$SG_FILE --capabilities CAPABILITY_NAMED_IAM
+aws cloudformation wait stack-create-complete --stack-name "$STACK_SG"
 echo "Security Groups creados exitosamente."
 
 echo ""
