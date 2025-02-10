@@ -106,10 +106,6 @@ Resources:
       Tags:
         - Key: Name
           Value: "equipo3-az2-cms1"
-      UserData:
-        Fn::Base64: !Sub |
-          #!/bin/bash
-          echo "DATABASE_HOST=${!ImportValue equipo3-RDS-Endpoint}" >> /etc/environment
 
   
   EC2CMS2:
@@ -126,10 +122,6 @@ Resources:
       Tags:
         - Key: Name
           Value: "equipo3-az2-cms2"
-      UserData:
-        Fn::Base64: !Sub |
-          #!/bin/bash
-          echo "DATABASE_HOST=${!ImportValue equipo3-RDS-Endpoint}" >> /etc/environment
 
   RDSDatabase:
     Type: AWS::EC2::Instance
@@ -144,6 +136,10 @@ Resources:
       Tags:
         - Key: Name
           Value: "equipo3-az2-rds"
+      UserData:
+        Fn::Base64: !Sub |
+          #!/bin/bash
+          echo "DATABASE_HOST=${!ImportValue equipo3-RDS-Endpoint}" >> /etc/environment
 
 Outputs:
   EC2ProxyAZ1Id:
