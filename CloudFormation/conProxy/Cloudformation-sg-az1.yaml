@@ -2,7 +2,7 @@ AWSTemplateFormatVersion: "2010-09-09"
 Description: "Stack para la creación de Security Groups"
 
 Resources:
-  ecurityGroupProxyAZ1:
+  securityGroupProxyAZ1:
     Type: AWS::EC2::SecurityGroup
     Properties:
       GroupDescription: "Security Group para el Proxy Inverso"
@@ -53,65 +53,105 @@ Resources:
         - Key: Name
           Value: "equipo3-sg-proxy"
 
-  SecurityGroupEjabberd:
-    Type: AWS::EC2::SecurityGroup
-    Properties:
-      GroupDescription: "Security Group para Ejabberd"
-      VpcId: !ImportValue equipo3-VPC-ID
-      SecurityGroupIngress:
-        # Redirección de tráfico desde el Proxy Inverso hacia Ejabberd
-        - IpProtocol: tcp
-          FromPort: 80
-          ToPort: 80
-          SourceSecurityGroupId: !Ref ecurityGroupProxyAZ1  # HTTP
-        - IpProtocol: tcp
-          FromPort: 22
-          ToPort: 22
-          SourceSecurityGroupId: !Ref ecurityGroupProxyAZ1  # SSH
-        - IpProtocol: tcp
-          FromPort: 5222
-          ToPort: 5222
-          SourceSecurityGroupId: !Ref ecurityGroupProxyAZ1  # XMPP cliente
-        - IpProtocol: tcp
-          FromPort: 5269
-          ToPort: 5269
-          SourceSecurityGroupId: !Ref ecurityGroupProxyAZ1  # XMPP interservidores
-        - IpProtocol: tcp
-          FromPort: 5280
-          ToPort: 5280
-          SourceSecurityGroupId: !Ref ecurityGroupProxyAZ1  # Administración HTTP
-        - IpProtocol: tcp
-          FromPort: 5281
-          ToPort: 5281
-          SourceSecurityGroupId: !Ref ecurityGroupProxyAZ1  # Administración HTTPS
-        - IpProtocol: tcp
-          FromPort: 5443
-          ToPort: 5443
-          SourceSecurityGroupId: !Ref ecurityGroupProxyAZ1  # WebSockets HTTPS para XMPP
-      SecurityGroupEgress:
-        # Permitir tráfico saliente desde Ejabberd hacia Internet (a través del NAT Gateway)
-        - IpProtocol: -1
-          CidrIp: 0.0.0.0/0
-      Tags:
-        - Key: Name
-          Value: "equipo3-sg-ejabberd"
+SecurityGroupEjabberd:
+  Type: AWS::EC2::SecurityGroup
+  Properties:
+    GroupDescription: "Security Group para Ejabberd"
+    VpcId: !ImportValue equipo3-VPC-ID
+    SecurityGroupIngress:
+      # Redirección de tráfico desde el Proxy Inverso hacia Ejabberd
+      - IpProtocol: tcp
+        FromPort: 80
+        ToPort: 80
+        SourceSecurityGroupId: !Ref SecurityGroupProxyAZ1  # HTTP
+      - IpProtocol: tcp
+        FromPort: 22
+        ToPort: 22
+        SourceSecurityGroupId: !Ref SecurityGroupProxyAZ1  # SSH
+      - IpProtocol: tcp
+        FromPort: 5222
+        ToPort: 5222
+        SourceSecurityGroupId: !Ref SecurityGroupProxyAZ1  # XMPP cliente
+      - IpProtocol: tcp
+        FromPort: 5269
+        ToPort: 5269
+        SourceSecurityGroupId: !Ref SecurityGroupProxyAZ1  # XMPP interservidores
+      - IpProtocol: tcp
+        FromPort: 5280
+        ToPort: 5280
+        SourceSecurityGroupId: !Ref SecurityGroupProxyAZ1  # Administración HTTP
+      - IpProtocol: tcp
+        FromPort: 5281
+        ToPort: 5281
+        SourceSecurityGroupId: !Ref SecurityGroupProxyAZ1  # Administración HTTPS
+      - IpProtocol: tcp
+        FromPort: 5443
+        ToPort: 5443
+        SourceSecurityGroupId: !Ref SecurityGroupProxyAZ1  # WebSockets HTTPS para XMPP
 
-  SecurityGroupPostgreSQL:
-    Type: AWS::EC2::SecurityGroup
-    Properties:
-      GroupDescription: "Security Group para la Base de Datos PostgreSQL"
-      VpcId: !ImportValue equipo3-VPC-ID
-      SecurityGroupIngress:
-        - IpProtocol: tcp
-          FromPort: 5432
-          ToPort: 5432
-          SourceSecurityGroupId: !Ref SecurityGroupEjabberd  # Acceso desde Ejabberd
-      SecurityGroupEgress:
-        - IpProtocol: -1
-          CidrIp: 0.0.0.0/0
-      Tags:
-        - Key: Name
-          Value: "equipo3-sg-postgresql"
+      # Permitir comunicación interna entre los nodos del clúster de Ejabberd
+      - IpProtocol: tcp
+        FromPort: 5222
+        ToPort: 5222
+        SourceSecurityGroupId: !Ref SecurityGroupEjabberd  # XMPP entre nodos Ejabberd
+      - IpProtocol: tcp
+        FromPort: 5269
+        ToPort: 5269
+        SourceSecurityGroupId: !Ref SecurityGroupEjabberd  # Comunicación interservidores
+      - IpProtocol: tcp
+        FromPort: 5280
+        ToPort: 5280
+        SourceSecurityGroupId: !Ref SecurityGroupEjabberd  # Administración HTTP interna
+
+      # Permitir acceso desde HAProxy para balanceo de carga
+      - IpProtocol: tcp
+        FromPort: 5222
+        ToPort: 5222
+        SourceSecurityGroupId: !ImportValue equipo3-SG-HAProxy-ID  # Permitir tráfico desde HAProxy
+
+    SecurityGroupEgress:
+      # Permitir tráfico saliente desde Ejabberd hacia Internet (a través del NAT Gateway)
+      - IpProtocol: -1
+        CidrIp: 0.0.0.0/0
+
+    Tags:
+      - Key: Name
+        Value: "equipo3-sg-ejabberd"
+
+
+SecurityGroupPostgreSQL:
+  Type: AWS::EC2::SecurityGroup
+  Properties:
+    GroupDescription: "Security Group para la Base de Datos PostgreSQL"
+    VpcId: !ImportValue equipo3-VPC-ID
+    SecurityGroupIngress:
+      # Permitir tráfico entre los nodos del clúster de PostgreSQL para replicación
+      - IpProtocol: tcp
+        FromPort: 5432
+        ToPort: 5432
+        SourceSecurityGroupId: !Ref SecurityGroupPostgreSQL  # Comunicación entre nodos PostgreSQL
+
+      # Permitir acceso desde Ejabberd hacia PostgreSQL
+      - IpProtocol: tcp
+        FromPort: 5432
+        ToPort: 5432
+        SourceSecurityGroupId: !Ref SecurityGroupEjabberd  # Acceso desde Ejabberd
+
+      # Permitir acceso desde HAProxy para balanceo de carga
+      - IpProtocol: tcp
+        FromPort: 5432
+        ToPort: 5432
+        SourceSecurityGroupId: !ImportValue equipo3-SG-HAProxy-ID  # Permitir tráfico desde HAProxy
+
+    SecurityGroupEgress:
+      # Permitir tráfico saliente desde PostgreSQL
+      - IpProtocol: -1
+        CidrIp: 0.0.0.0/0
+
+    Tags:
+      - Key: Name
+        Value: "equipo3-sg-postgresql"
+
 
 Outputs:
   ecurityGroupProxyAZ1Id:

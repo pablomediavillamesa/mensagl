@@ -35,7 +35,7 @@ Resources:
         - Key: Name
           Value: "equipo3-az2-proxy"
 
-  EC2Ejabberd:
+  EC2Ejabberd1:
     Type: AWS::EC2::Instance
     Properties:
       InstanceType: t2.micro
@@ -47,9 +47,24 @@ Resources:
       PrivateIpAddress: 10.0.3.10
       Tags:
         - Key: Name
-          Value: "equipo3-az1-ejabberd"
+          Value: "equipo3-ejabberd-1"
 
-  EC2PostgreSQL:
+  EC2Ejabberd2:
+    Type: AWS::EC2::Instance
+    Properties:
+      InstanceType: t2.micro
+      ImageId: ami-04b4f1a9cf54c11d0 # Ubuntu Server 24.04
+      KeyName: !Ref KeyName
+      SubnetId: !ImportValue equipo3-SubnetPrivate1-ID
+      SecurityGroupIds:
+        - !ImportValue equipo3-SG-Ejabberd-ID
+      PrivateIpAddress: 10.0.3.11
+      Tags:
+        - Key: Name
+          Value: "equipo3-ejabberd-2"
+
+
+  EC2PostgreSQL1:
     Type: AWS::EC2::Instance
     Properties:
       InstanceType: t2.micro
@@ -61,9 +76,23 @@ Resources:
       PrivateIpAddress: 10.0.3.100
       Tags:
         - Key: Name
-          Value: "equipo3-az1-postgresql"
+          Value: "equipo3-az1-postgresql-1"
+  
+  EC2PostgreSQL2:
+    Type: AWS::EC2::Instance
+    Properties:
+      InstanceType: t2.micro
+      ImageId: ami-04b4f1a9cf54c11d0 # Ubuntu Server 24.04
+      KeyName: !Ref KeyName
+      SubnetId: !ImportValue equipo3-SubnetPrivate1-ID
+      SecurityGroupIds:
+        - !ImportValue equipo3-SG-PostgreSQL-ID
+      PrivateIpAddress: 10.0.3.101
+      Tags:
+        - Key: Name
+          Value: "equipo3-az1-postgresql-2"
 
-  EC2CMS:
+  EC2CMS1:
     Type: AWS::EC2::Instance
     Properties:
       InstanceType: t2.micro
@@ -76,7 +105,22 @@ Resources:
       PrivateIpAddress: 10.0.4.10
       Tags:
         - Key: Name
-          Value: "equipo3-az2-cms"
+          Value: "equipo3-az2-cms1"
+  
+  EC2CMS2:
+    Type: AWS::EC2::Instance
+    Properties:
+      InstanceType: t2.micro
+      ImageId: ami-04b4f1a9cf54c11d0 # Ubuntu Server 24.04
+      KeyName: !Ref KeyName
+      SubnetId: !ImportValue equipo3-SubnetPrivate2-ID
+      SecurityGroupIds:
+        - !ImportValue equipo3-SG-CMS-ID
+        - !ImportValue equipo3-SG-RDS-ID  # Asegura que CMS pueda hablar con RDS
+      PrivateIpAddress: 10.0.4.11
+      Tags:
+        - Key: Name
+          Value: "equipo3-az2-cms2"
 
   RDSDatabase:
     Type: AWS::EC2::Instance
@@ -105,23 +149,41 @@ Outputs:
     Export:
       Name: "equipo3-EC2-Proxy-AZ2-ID"
 
-  EC2EjabberdId:
-    Description: "ID de la instancia Ejabberd"
-    Value: !Ref EC2Ejabberd
+  EC2Ejabberd1Id:
+    Description: "ID de la primera instancia Ejabberd"
+    Value: !Ref EC2Ejabberd1
     Export:
-      Name: "equipo3-EC2-Ejabberd-ID"
+      Name: "equipo3-EC2-Ejabberd-1-ID"
 
-  EC2PostgreSQLId:
-    Description: "ID de la instancia PostgreSQL"
-    Value: !Ref EC2PostgreSQL
+  EC2Ejabberd2Id:
+    Description: "ID de la segunda instancia Ejabberd"
+    Value: !Ref EC2Ejabberd2
     Export:
-      Name: "equipo3-EC2-PostgreSQL-ID"
+      Name: "equipo3-EC2-Ejabberd-2-ID"
 
-  EC2CMSId:
-    Description: "ID de la instancia CMS"
-    Value: !Ref EC2CMS
+  EC2PostgreSQL1Id:
+    Description: "ID de la primera instancia PostgreSQL"
+    Value: !Ref EC2PostgreSQL1
     Export:
-      Name: "equipo3-EC2-CMS-ID"
+      Name: "equipo3-EC2-PostgreSQL-1-ID"
+
+  EC2PostgreSQL2Id:
+    Description: "ID de la segunda instancia PostgreSQL"
+    Value: !Ref EC2PostgreSQL2
+    Export:
+      Name: "equipo3-EC2-PostgreSQL-2-ID"
+
+  EC2CMS1Id:
+    Description: "ID de la primera instancia CMS"
+    Value: !Ref EC2CMS1
+    Export:
+      Name: "equipo3-EC2-CMS-1-ID"
+
+  EC2CMS2Id:
+    Description: "ID de la segunda instancia CMS"
+    Value: !Ref EC2CMS2
+    Export:
+      Name: "equipo3-EC2-CMS-2-ID"
 
   RDSDatabaseId:
     Description: "ID de la base de datos RDS"

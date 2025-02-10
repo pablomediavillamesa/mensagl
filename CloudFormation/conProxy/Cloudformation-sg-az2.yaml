@@ -28,29 +28,58 @@ Resources:
           Value: "equipo3-sg-proxy-az2"
 
   SecurityGroupCMS:
-    Type: AWS::EC2::SecurityGroup
-    Properties:
-      GroupDescription: "Security Group para el Servidor CMS"
-      VpcId: !ImportValue equipo3-VPC-ID
-      SecurityGroupIngress:
-        - IpProtocol: tcp
-          FromPort: 80
-          ToPort: 80
-          SourceSecurityGroupId: !Ref SecurityGroupProxyAZ2  # HTTP desde el proxy inverso
-        - IpProtocol: tcp
-          FromPort: 443
-          ToPort: 443
-          SourceSecurityGroupId: !Ref SecurityGroupProxyAZ2  # HTTPS desde el proxy inverso
-        - IpProtocol: tcp
-          FromPort: 22
-          ToPort: 22
-          SourceSecurityGroupId: !Ref SecurityGroupProxyAZ2  # SSH desde el proxy inverso
-      SecurityGroupEgress:
-        - IpProtocol: -1
-          CidrIp: 0.0.0.0/0
-      Tags:
-        - Key: Name
-          Value: "equipo3-sg-cms"
+  Type: AWS::EC2::SecurityGroup
+  Properties:
+    GroupDescription: "Security Group para el Servidor CMS"
+    VpcId: !ImportValue equipo3-VPC-ID
+    SecurityGroupIngress:
+      # Permitir tráfico HTTP/HTTPS desde el Proxy Inverso (HAProxy)
+      - IpProtocol: tcp
+        FromPort: 80
+        ToPort: 80
+        SourceSecurityGroupId: !ImportValue equipo3-SG-HAProxy-ID  # HTTP desde HAProxy
+      - IpProtocol: tcp
+        FromPort: 443
+        ToPort: 443
+        SourceSecurityGroupId: !ImportValue equipo3-SG-HAProxy-ID  # HTTPS desde HAProxy
+
+      # Permitir acceso SSH solo desde Proxy Inverso o una IP específica
+      - IpProtocol: tcp
+        FromPort: 22
+        ToPort: 22
+        SourceSecurityGroupId: !ImportValue equipo3-SG-HAProxy-ID  # SSH seguro
+
+      # Permitir comunicación entre los servidores CMS (si hay más de uno)
+      - IpProtocol: tcp
+        FromPort: 80
+        ToPort: 80
+        SourceSecurityGroupId: !Ref SecurityGroupCMS  # CMS pueden comunicarse entre sí
+      - IpProtocol: tcp
+        FromPort: 443
+        ToPort: 443
+        SourceSecurityGroupId: !Ref SecurityGroupCMS  # CMS pueden comunicarse entre sí
+
+      # Permitir acceso desde CMS a PostgreSQL
+      - IpProtocol: tcp
+        FromPort: 5432
+        ToPort: 5432
+        SourceSecurityGroupId: !ImportValue equipo3-SG-PostgreSQL-ID  # CMS se conecta a PostgreSQL
+
+      # Permitir acceso desde CMS a MySQL/RDS
+      - IpProtocol: tcp
+        FromPort: 3306
+        ToPort: 3306
+        SourceSecurityGroupId: !ImportValue equipo3-SG-RDS-ID  # CMS accede a MySQL RDS
+
+    SecurityGroupEgress:
+      # Permitir tráfico saliente desde CMS hacia Internet o RDS
+      - IpProtocol: -1
+        CidrIp: 0.0.0.0/0
+
+    Tags:
+      - Key: Name
+        Value: "equipo3-sg-cms"
+
 
   SecurityGroupRDS:
     Type: AWS::EC2::SecurityGroup
