@@ -90,6 +90,18 @@ Resources:
         - Key: Name
           Value: "equipo3-public-rt"
 
+  RouteTablePublicAssociation1:
+    Type: AWS::EC2::SubnetRouteTableAssociation
+    Properties:
+      RouteTableId: !Ref RouteTablePublic
+      SubnetId: !Ref SubnetPublic1
+
+  RouteTablePublicAssociation2:
+    Type: AWS::EC2::SubnetRouteTableAssociation
+    Properties:
+      RouteTableId: !Ref RouteTablePublic
+      SubnetId: !Ref SubnetPublic2
+
   RoutePublic:
     Type: AWS::EC2::Route
     Properties:
@@ -104,6 +116,18 @@ Resources:
       Tags:
         - Key: Name
           Value: "equipo3-private-rt"
+
+  RouteTablePrivateAssociation1:
+    Type: AWS::EC2::SubnetRouteTableAssociation
+    Properties:
+      RouteTableId: !Ref RouteTablePrivate
+      SubnetId: !Ref SubnetPrivate1
+
+  RouteTablePrivateAssociation2:
+    Type: AWS::EC2::SubnetRouteTableAssociation
+    Properties:
+      RouteTableId: !Ref RouteTablePrivate
+      SubnetId: !Ref SubnetPrivate2
 
   RoutePrivate:
     Type: AWS::EC2::Route
