@@ -72,7 +72,7 @@ echo ""
 
 # 5️ Crear los Security Groups
 echo "Creando los Security Groups en AZ1 y AZ2..."
-aws cloudformation create-stack --stack-name "$STACK_SG_AZ1" --template-body file://$SG_FILE --capabilities CAPABILITY_NAMED_IAM
+aws cloudformation create-stack --stack-name "$STACK_SG" --template-body file://$SG_FILE --capabilities CAPABILITY_NAMED_IAM
 aws cloudformation wait stack-create-complete --stack-name "$STACK_SG"
 echo "Security Groups creados exitosamente."
 
