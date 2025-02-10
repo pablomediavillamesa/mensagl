@@ -6,6 +6,7 @@ STACK_VPC="equipo3-vpc"
 STACK_SG_AZ1="equipo3-sg-az1"
 STACK_SG_AZ2="equipo3-sg-az2"
 STACK_INSTANCES="equipo3-instances"
+STACK_RDS="equipo3-rds"
 KEY_NAME="mensagl"
 KEY_FILE="${KEY_NAME}.pem"
 
@@ -14,6 +15,7 @@ VPC_FILE="Cloudformation-vpc.yaml"
 SG_AZ1_FILE="Cloudformation-sg-az1.yaml"
 SG_AZ2_FILE="Cloudformation-sg-az2.yaml"
 INSTANCES_FILE="Cloudformation-ec2.yaml"
+RDS_FILE="Cloudformation-rds.yaml"
 
 # Verificar si se usa --force-redeploy
 FORCE_REDEPLOY=false
@@ -37,7 +39,7 @@ echo ""
 
 # 2️ Validar sintaxis de los archivos YAML
 echo "Validando la sintaxis de los archivos YAML..."
-for file in $VPC_FILE $SG_AZ1_FILE $SG_AZ2_FILE $INSTANCES_FILE; do
+for file in $VPC_FILE $SG_AZ1_FILE $SG_AZ2_FILE $INSTANCES_FILE $RDS_FILE; do
     aws cloudformation validate-template --template-body file://$file
     echo "$file es válido."
 done
@@ -51,12 +53,14 @@ if [ "$FORCE_REDEPLOY" = true ]; then
     aws cloudformation delete-stack --stack-name "$STACK_SG_AZ1"
     aws cloudformation delete-stack --stack-name "$STACK_SG_AZ2"
     aws cloudformation delete-stack --stack-name "$STACK_VPC"
+    aws cloudformation delete-stack --stack-name "$STACK_RDS"
     
     echo "Esperando a que se eliminen los stacks..."
     aws cloudformation wait stack-delete-complete --stack-name "$STACK_INSTANCES" || true
     aws cloudformation wait stack-delete-complete --stack-name "$STACK_SG_AZ1" || true
     aws cloudformation wait stack-delete-complete --stack-name "$STACK_SG_AZ2" || true
     aws cloudformation wait stack-delete-complete --stack-name "$STACK_VPC" || true
+    aws cloudformation wait stack-delete-complete --stack-name "$STACK_RDS" || true
     echo "Stacks eliminados."
 fi
 
@@ -85,5 +89,13 @@ echo "Creando las instancias EC2 ($STACK_INSTANCES)..."
 aws cloudformation create-stack --stack-name "$STACK_INSTANCES" --template-body file://$INSTANCES_FILE --capabilities CAPABILITY_NAMED_IAM --parameters ParameterKey=KeyName,ParameterValue=$KEY_NAME
 aws cloudformation wait stack-create-complete --stack-name "$STACK_INSTANCES"
 echo "Instancias EC2 creadas exitosamente."
+
+echo ""
+
+# 7 Creando las instancias RDS
+echo "Creando las instancias RDS ($STACK_RDS)..."
+aws cloudformation create-stack --stack-name "$STACK_RDS" --template-body file://$RDS_FILE --capabilities CAPABILITY_NAMED_IAM 
+aws cloudformation wait stack-create-complete --stack-name "$STACK_RDS"
+echo "Instancia RDS Creada exitosamente"
 
 echo "Infraestructura desplegada con éxito."
