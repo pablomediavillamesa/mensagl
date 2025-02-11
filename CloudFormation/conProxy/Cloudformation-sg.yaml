@@ -11,7 +11,7 @@ Resources:
       SecurityGroupIngress:
         - IpProtocol: tcp
           FromPort: 22
-          ToPort: 2
+          ToPort: 22
           CidrIp: 0.0.0.0/0  # FTP
         - IpProtocol: tcp
           FromPort: 80
