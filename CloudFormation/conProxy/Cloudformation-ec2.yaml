@@ -6,10 +6,6 @@ Parameters:
     Type: String
     Description: "mensagl"
 
-  DatabaseEndpoint:
-    Type: String
-    Description: "Endpoint de la base de datos RDS"
-
 Resources:
   EC2ProxyAZ1:
     Type: AWS::EC2::Instance
@@ -170,11 +166,7 @@ Resources:
       Tags:
         - Key: Name
           Value: "equipo3-az2-rds"
-      UserData:
-        Fn::Base64: !Sub |
-          #!/bin/bash
-          echo "DATABASE_HOST=${!ImportValue equipo3-RDS-Endpoint}" >> /etc/environment
-
+          
 Outputs:
   EC2ProxyAZ1Id:
     Description: "ID de la instancia Proxy en AZ1"

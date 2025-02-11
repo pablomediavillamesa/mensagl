@@ -4,6 +4,7 @@ set -e  # Detener la ejecución en caso de error
 
 STACK_VPC="equipo3-vpc"
 STACK_SG="equipo3-sg"
+STACK_S3="equipo3-s3-scripts"
 STACK_INSTANCES="equipo3-instances"
 STACK_RDS="equipo3-rds"
 KEY_NAME="mensagl"
@@ -14,6 +15,7 @@ VPC_FILE="Cloudformation-vpc.yaml"
 SG_FILE="Cloudformation-sg.yaml"
 INSTANCES_FILE="Cloudformation-ec2.yaml"
 RDS_FILE="Cloudformation-rds.yaml"
+S3_FILE="Cloudformation-s3.yaml"
 
 # Verificar si se usa --force-redeploy
 FORCE_REDEPLOY=false
@@ -77,6 +79,15 @@ aws cloudformation wait stack-create-complete --stack-name "$STACK_SG"
 echo "Security Groups creados exitosamente."
 
 echo ""
+
+# 6️ Crear el bucket S3
+echo "Creando el bucket S3 ($STACK_S3)..."
+aws cloudformation create-stack --stack-name "$STACK_S3" --template-body file://$S3_FILE --capabilities CAPABILITY_NAMED_IAM
+aws cloudformation wait stack-create-complete --stack-name "$STACK_S3"
+echo "Bucket S3 creado exitosamente."
+
+echo ""
+
 
 # 7 Creando las instancias RDS
 echo "Creando las instancias RDS ($STACK_RDS)..."
