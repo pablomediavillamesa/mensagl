@@ -31,6 +31,6 @@ Resources:
 Outputs:
   RDSDatabaseEndpoint:
     Description: "Endpoint de la base de datos RDS"
-    Value: !GetAtt RDSDatabase.Endpoint.Address
+    Value: !Ref RDSInstance
     Export:
       Name: "equipo3-RDS-Endpoint"
