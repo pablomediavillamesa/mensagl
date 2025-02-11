@@ -39,7 +39,7 @@ echo ""
 
 # 2️ Validar sintaxis de los archivos YAML
 echo "Validando la sintaxis de los archivos YAML..."
-for file in $VPC_FILE $SG_AZ1_FILE $SG_AZ2_FILE $INSTANCES_FILE $RDS_FILE; do
+for file in $VPC_FILE $SG_AZ1_FILE $SG_AZ2_FILE $INSTANCES_FILE $RDS_FILE $S3_FILE; do
     aws cloudformation validate-template --template-body file://$file
     echo "$file es válido."
 done
