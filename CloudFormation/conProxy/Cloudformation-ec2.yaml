@@ -6,6 +6,10 @@ Parameters:
     Type: String
     Description: "mensagl"
 
+  DatabaseEndpoint:
+    Type: String
+    Description: "Endpoint de la base de datos RDS"
+
 Resources:
   EC2ProxyAZ1:
     Type: AWS::EC2::Instance
@@ -20,6 +24,13 @@ Resources:
       Tags:
         - Key: Name
           Value: "equipo3-az1-proxy"
+      UserData:
+        Fn::Base64: !Sub |
+          #!/bin/bash
+          mkdir -p /home/ubuntu/log
+          echo "Server iniciado" > /home/ubuntu/log/haproxy.log
+          chmod 644 /home/ubuntu/log/haproxy.log
+
 
   EC2ProxyAZ2:
     Type: AWS::EC2::Instance
@@ -34,12 +45,18 @@ Resources:
       Tags:
         - Key: Name
           Value: "equipo3-az2-proxy"
-
+      UserData:
+        Fn::Base64: !Sub |
+          #!/bin/bash
+          mkdir -p /home/ubuntu/log
+          echo "Server iniciado" > /home/ubuntu/log/haproxy.log
+          chmod 644 /home/ubuntu/log/haproxy.log  
+          
   EC2Ejabberd1:
     Type: AWS::EC2::Instance
     Properties:
       InstanceType: t2.micro
-      ImageId: ami-04b4f1a9cf54c11d0 # Ubuntu Server 24.04
+      ImageId: ami-04b4f1a9cf54c11d0 # ubuntu Server 24.04
       KeyName: !Ref KeyName
       SubnetId: !ImportValue equipo3-SubnetPrivate1-ID
       SecurityGroupIds:
@@ -48,6 +65,12 @@ Resources:
       Tags:
         - Key: Name
           Value: "equipo3-ejabberd-1"
+      UserData:
+        Fn::Base64: !Sub |
+          #!/bin/bash
+          mkdir -p /home/ubuntu/log
+          echo "Server iniciado" > /home/ubuntu/log/ejabberd.log
+          chmod 644 /home/ubuntu/log/ejabberd.log
 
   EC2Ejabberd2:
     Type: AWS::EC2::Instance
@@ -62,6 +85,12 @@ Resources:
       Tags:
         - Key: Name
           Value: "equipo3-ejabberd-2"
+      UserData:
+        Fn::Base64: !Sub |
+          #!/bin/bash
+          mkdir -p /home/ubuntu/log
+          echo "Server iniciado" > /home/ubuntu/log/ejabberd.log
+          chmod 644 /home/ubuntu/log/ejabberd.log
 
 
   EC2PostgreSQL1:
@@ -77,6 +106,12 @@ Resources:
       Tags:
         - Key: Name
           Value: "equipo3-az1-postgresql-1"
+      UserData:
+        Fn::Base64: !Sub |
+          #!/bin/bash
+          mkdir -p /home/ubuntu/log
+          echo "postgree Server iniciado" > /home/ubuntu/log/postgre.log
+          chmod 644 /home/ubuntu/log/postgree.log
   
   EC2PostgreSQL2:
     Type: AWS::EC2::Instance
@@ -107,7 +142,6 @@ Resources:
         - Key: Name
           Value: "equipo3-az2-cms1"
 
-  
   EC2CMS2:
     Type: AWS::EC2::Instance
     Properties:

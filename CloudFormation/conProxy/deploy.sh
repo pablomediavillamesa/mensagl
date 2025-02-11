@@ -86,6 +86,14 @@ echo "Instancia RDS Creada exitosamente"
 
 echo ""
 
+# 8 Obtener el endpoint de RDS
+echo "Obteniendo el endpoint de RDS..."
+RDS_ENDPOINT=$(aws cloudformation describe-stacks --stack-name "$STACK_RDS" \
+  --query "Stacks[0].Outputs[?ExportName=='equipo3-RDS-Endpoint'].OutputValue" --output text)
+
+echo "El endpoint de RDS es: $RDS_ENDPOINT"
+
+
 # 6️ Crear las instancias EC2
 echo "Creando las instancias EC2 ($STACK_INSTANCES)..."
 aws cloudformation create-stack --stack-name "$STACK_INSTANCES" --template-body file://$INSTANCES_FILE --capabilities CAPABILITY_NAMED_IAM --parameters ParameterKey=KeyName,ParameterValue=$KEY_NAME

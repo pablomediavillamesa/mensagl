@@ -29,8 +29,8 @@ Resources:
         - !ImportValue equipo3-SubnetPrivate2-ID
 
 Outputs:
-  RDSInstanceEndpoint:
+  RDSDatabaseEndpoint:
     Description: "Endpoint de la base de datos RDS"
-    Value: !GetAtt RDSInstance.Endpoint.Address
+    Value: !GetAtt RDSDatabase.Endpoint.Address
     Export:
       Name: "equipo3-RDS-Endpoint"
