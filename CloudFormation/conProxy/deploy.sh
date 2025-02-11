@@ -88,6 +88,12 @@ echo "Bucket S3 creado exitosamente."
 
 echo ""
 
+# 7 Subir los scripts a S3
+echo "Subiendo la carpeta de scripts a S3..."
+aws s3 cp ./scripts s3://equipo3-scripts/ --recursive
+echo "Todos los scripts han sido subidos correctamente a S3."
+
+
 
 # 7 Creando las instancias RDS
 echo "Creando las instancias RDS ($STACK_RDS)..."

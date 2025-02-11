@@ -23,9 +23,10 @@ Resources:
       UserData:
         Fn::Base64: !Sub |
           #!/bin/bash
-          mkdir -p /home/ubuntu/log
-          echo "Server iniciado" > /home/ubuntu/log/haproxy.log
-          chmod 644 /home/ubuntu/log/haproxy.log
+          mkdir -p /home/ubuntu/scripts
+          aws s3 cp s3://equipo3-scripts/hola.sh /home/ubuntu/scripts/hola.sh
+          chmod +x /home/ubuntu/scripts/*.sh
+          /home/ubuntu/scripts/setup.sh
 
 
   EC2ProxyAZ2:
@@ -166,7 +167,7 @@ Resources:
       Tags:
         - Key: Name
           Value: "equipo3-az2-rds"
-          
+
 Outputs:
   EC2ProxyAZ1Id:
     Description: "ID de la instancia Proxy en AZ1"
