@@ -6,7 +6,6 @@ STACK_VPC="equipo3-vpc"
 STACK_SG="equipo3-sg"
 STACK_S3="equipo3-s3-scripts"
 STACK_INSTANCES="equipo3-instances"
-STACK_RDS="equipo3-rds"
 KEY_NAME="mensagl"
 KEY_FILE="${KEY_NAME}.pem"
 
@@ -14,7 +13,6 @@ KEY_FILE="${KEY_NAME}.pem"
 VPC_FILE="Cloudformation-vpc.yaml"
 SG_FILE="Cloudformation-sg.yaml"
 INSTANCES_FILE="Cloudformation-ec2.yaml"
-RDS_FILE="Cloudformation-rds.yaml"
 S3_FILE="Cloudformation-s3.yaml"
 
 # Verificar si se usa --force-redeploy
@@ -94,21 +92,44 @@ aws s3 cp ./scripts s3://equipo3-scripts/ --recursive
 echo "Todos los scripts han sido subidos correctamente a S3."
 
 
+echo "Creando grupo de subredes para RDS MySQL"
+    
+RDS_SUBNET_GROUP_NAME="cms-db-subnet-group"
+SUBNET_PRIVATE1_ID=$(aws cloudformation describe-stacks --stack-name $VPC_STACK_NAME --query "Stacks[0].Outputs[?ExportName=='equipo3-SubnetPrivate1-ID'].OutputValue" --output text)
+SUBNET_PRIVATE2_ID=$(aws cloudformation describe-stacks --stack-name $VPC_STACK_NAME --query "Stacks[0].Outputs[?ExportName=='equipo3-SubnetPrivate2-ID'].OutputValue" --output text)
 
-# 7 Creando las instancias RDS
-echo "Creando las instancias RDS ($STACK_RDS)..."
-aws cloudformation create-stack --stack-name "$STACK_RDS" --template-body file://$RDS_FILE --capabilities CAPABILITY_NAMED_IAM 
-aws cloudformation wait stack-create-complete --stack-name "$STACK_RDS"
-echo "Instancia RDS Creada exitosamente"
+if [ -z "$SUBNET_PRIVATE1_ID" ] || [ -z "$SUBNET_PRIVATE2_ID" ]; then
+  echo "Error: No se pudieron obtener las subredes privadas de la VPC."
+  exit 1
+fi
 
-echo ""
+# Crear grupo de subredes para RDS MySQL
+echo "Creando grupo de subredes para RDS MySQL..."
+aws rds create-db-subnet
+-group \
+    --db-subnet-group-name "$RDS_SUBNET_GROUP_NAME" \
+    --db-subnet-group-description "Grupo de subredes para RDS MySQL CMS" \
+    --subnet-ids "$SUBNET_PRIVATE1_ID" "$SUBNET_PRIVATE2_ID" \
+    --tags Key=Name,Value="$RDS_SUBNET_GROUP_NAME"
+echo "Grupo de subredes creado exitosamente."
 
-# 8 Obtener el endpoint de RDS
-echo "Obteniendo el endpoint de RDS..."
-RDS_ENDPOINT=$(aws cloudformation describe-stacks --stack-name "$STACK_RDS" \
-  --query "Stacks[0].Outputs[?ExportName=='equipo3-RDS-Endpoint'].OutputValue" --output text)
-
-echo "El endpoint de RDS es: $RDS_ENDPOINT"
+# Crear instancia RDS MySQL
+echo "Creando instancia de RDS MySQL..."
+aws rds create-db-instance \
+    --db-instance-identifier "cms-database" \
+    --allocated-storage 20 \
+    --storage-type "gp2" \
+    --db-instance-class "db.t3.micro" \
+    --engine "mysql" \
+    --engine-version "8.0" \
+    --master-username "admin" \
+    --master-user-password "Admin123" \
+    --db-name "wordpress_db" \
+    --db-subnet-group-name "$RDS_SUBNET_GROUP_NAME" \
+    --vpc-security-group-ids "$SG_DB_CMS_ID" \
+    --publicly-accessible \
+    --tags Key=Name,Value="wordpress_db"
+echo "Instancia RDS MySQL creada exitosamente."
 
 
 # 6️ Crear las instancias EC2

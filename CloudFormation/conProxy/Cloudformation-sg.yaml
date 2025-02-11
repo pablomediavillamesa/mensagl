@@ -10,8 +10,8 @@ Resources:
       VpcId: !ImportValue equipo3-VPC-ID
       SecurityGroupIngress:
         - IpProtocol: tcp
-          FromPort: 20
-          ToPort: 20
+          FromPort: 22
+          ToPort: 2
           CidrIp: 0.0.0.0/0  # FTP
         - IpProtocol: tcp
           FromPort: 80
