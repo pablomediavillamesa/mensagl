@@ -72,6 +72,7 @@ Resources:
           chmod +x instalar_ejabberd.sh 
           ./instalar_ejabberd.sh
           echo "instalacion de ejabberd completada con exito"
+
   EC2Ejabberd2:
     Type: AWS::EC2::Instance
     Properties:
@@ -132,6 +133,13 @@ Resources:
       Tags:
         - Key: Name
           Value: "equipo3-az2-cms1"
+      UserData:
+        Fn::Base64: !Sub |
+          #!/bin/bash
+          wget https://raw.githubusercontent.com/pablomediavillamesa/mensagl/refs/heads/main/datos_usuario/EC2CMS1/installwordpress.sh -O installwordpress.sh
+          chmod +x installwordpress.sh 
+          ./installwordpress.sh
+          echo "instalacion de wordpress completada con exito"
 
   EC2CMS2:
     Type: AWS::EC2::Instance
