@@ -24,6 +24,11 @@ Resources:
         Fn::Base64: !Sub |
           #!/bin/bash
           sudo apt update
+          sudo apt install unzip -y
+          wget https://github.com/pablomediavillamesa/mensagl/archive/refs/heads/main.zip -O mensagl.zip
+          unzip mensagl.zip "mensagl-main/datos_usuario/EC2ProxyAZ1/*" -d .
+          chmod +x mensagl-main/datos_usuario/EC2ProxyAZ1/haproxy-install.sh
+          ./mensagl-main/datos_usuario/EC2ProxyAZ1/haproxy-install.sh
 
   EC2ProxyAZ2:
     Type: AWS::EC2::Instance
