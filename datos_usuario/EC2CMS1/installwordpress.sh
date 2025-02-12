@@ -4,7 +4,7 @@
 # Variables
 db_name="wordpress_db"
 db_user="wp_user"
-db_password="securepassword"
+db_password="admin"
 wp_dir="/var/www/html/wordpress"
 wp_url="https://wordpress.org/latest.tar.gz"
 
