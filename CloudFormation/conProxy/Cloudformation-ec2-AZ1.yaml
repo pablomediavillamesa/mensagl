@@ -1,0 +1,66 @@
+WSTemplateFormatVersion: "2010-09-09"
+Description: "Stack para la creación de instancias EC2 y RDS"
+
+Parameters:
+  KeyName:
+    Type: String
+    Description: "mensagl"
+
+Resources:
+  EC2ProxyAZ1:
+    Type: AWS::EC2::Instance
+    Properties:
+      InstanceType: t2.micro
+      ImageId: ami-04b4f1a9cf54c11d0 # Ubuntu Server 24.04
+      KeyName: !Ref KeyName
+      SubnetId: !ImportValue equipo3-SubnetPublic1-ID
+      SecurityGroupIds:
+        - !ImportValue equipo3-SG-Proxy-AZ1-ID
+      PrivateIpAddress: 10.0.1.50
+      Tags:
+        - Key: Name
+          Value: "equipo3-az1-proxy"
+      UserData:
+        Fn::Base64: !Sub |
+          #!/bin/bash
+          sudo apt update
+          sudo apt install unzip -y
+          wget https://github.com/pablomediavillamesa/mensagl/archive/refs/heads/main.zip -O mensagl.zip
+          unzip mensagl.zip "mensagl-main/datos_usuario/EC2ProxyAZ1/*" -d .
+          chmod +x mensagl-main/datos_usuario/EC2ProxyAZ1/haproxy-install.sh
+          ./mensagl-main/datos_usuario/EC2ProxyAZ1/haproxy-install.sh
+
+  EC2Ejabberd1:
+    Type: AWS::EC2::Instance
+    Properties:
+      InstanceType: t2.micro
+      ImageId: ami-04b4f1a9cf54c11d0 # ubuntu Server 24.04
+      KeyName: !Ref KeyName
+      SubnetId: !ImportValue equipo3-SubnetPrivate1-ID
+      SecurityGroupIds:
+        - !ImportValue equipo3-SG-Ejabberd-ID
+      PrivateIpAddress: 10.0.3.10
+      Tags:
+        - Key: Name
+          Value: "equipo3-ejabberd-1"
+      UserData:
+        Fn::Base64: !Sub |
+          #!/bin/bash
+          wget https://raw.githubusercontent.com/pablomediavillamesa/mensagl/refs/heads/main/datos_usuario/EC2Ejabberd1/instalar_ejabberdcompleto.sh -O instalar_ejabberd.sh
+          chmod +x instalar_ejabberd.sh 
+          ./instalar_ejabberd.sh
+          echo "instalacion de ejabberd completada con exito"
+
+  EC2PostgreSQL1:
+    Type: AWS::EC2::Instance
+    Properties:
+      InstanceType: t2.micro
+      ImageId: ami-04b4f1a9cf54c11d0 # Ubuntu Server 24.04
+      KeyName: !Ref KeyName
+      SubnetId: !ImportValue equipo3-SubnetPrivate1-ID
+      SecurityGroupIds:
+        - !ImportValue equipo3-SG-PostgreSQL-ID
+      PrivateIpAddress: 10.0.3.100
+      Tags:
+        - Key: Name
+          Value: "equipo3-az1-postgresql-1"
