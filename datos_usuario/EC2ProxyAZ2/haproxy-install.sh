@@ -4,7 +4,7 @@
 chmod +x duckdns-ejabberd-proxy.sh
 
 echo "Ejecutando script duckdns..."
-sudo ./duckdns-ejabberd-proxy.sh
+sudo ./duckdns-wordpresspmm-proxy.sh
 
 echo "Instalando HAProxy"
 sudo apt install haproxy -y
