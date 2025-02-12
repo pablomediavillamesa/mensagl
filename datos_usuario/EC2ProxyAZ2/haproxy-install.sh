@@ -1,7 +1,7 @@
 #!/bin/bash
 
 # Dar permisos de ejecución al script secundario
-chmod +x duckdns-ejabberd-proxy.sh
+chmod +x duckdns-wordpresspmm-proxy.sh
 
 echo "Ejecutando script duckdns..."
 sudo ./duckdns-wordpresspmm-proxy.sh
