@@ -23,14 +23,20 @@ if [ -z "$SUBNET_PRIVATE1_ID" ] || [ -z "$SUBNET_PRIVATE2_ID" ]; then
   exit 1
 fi
 
-# Crear grupo de subredes para RDS MySQL
-echo "Creando grupo de subredes para RDS MySQL..."
-aws rds create-db-subnet-group \
-    --db-subnet-group-name "$RDS_SUBNET_GROUP_NAME" \
-    --db-subnet-group-description "Grupo de subredes para RDS MySQL CMS" \
-    --subnet-ids "$SUBNET_PRIVATE1_ID" "$SUBNET_PRIVATE2_ID" \
-    --tags Key=Name,Value="$RDS_SUBNET_GROUP_NAME"
-echo "Grupo de subredes creado exitosamente."
+# Verificar si el grupo de subredes ya existe
+EXISTING_SUBNET_GROUP=$(aws rds describe-db-subnet-groups --query "DBSubnetGroups[?DBSubnetGroupName=='cms-db-subnet-group'].DBSubnetGroupName" --output text)
+
+if [ "$EXISTING_SUBNET_GROUP" == "cms-db-subnet-group" ]; then
+  echo "El grupo de subredes ya existe, omitiendo creación."
+else
+  echo "Creando grupo de subredes para RDS MySQL..."
+  aws rds create-db-subnet-group \
+      --db-subnet-group-name "$RDS_SUBNET_GROUP_NAME" \
+      --db-subnet-group-description "Grupo de subredes para RDS MySQL CMS" \
+      --subnet-ids "$SUBNET_PRIVATE1_ID" "$SUBNET_PRIVATE2_ID" \
+      --tags Key=Name,Value="$RDS_SUBNET_GROUP_NAME"
+  echo "Grupo de subredes creado exitosamente."
+fi
 
 # Crear instancia RDS MySQL
 echo "Creando instancia de RDS MySQL..."
@@ -46,7 +52,6 @@ aws rds create-db-instance \
     --db-name "wordpress_db" \
     --db-subnet-group-name "$RDS_SUBNET_GROUP_NAME" \
     --vpc-security-group-ids "$SG_DB_CMS_ID" \
-    --publicly-accessible \
     --tags Key=Name,Value="wordpress_db"
 echo "Instancia RDS MySQL creada exitosamente."
 

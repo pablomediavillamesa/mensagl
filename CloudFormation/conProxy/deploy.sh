@@ -4,7 +4,6 @@ set -e  # Detener la ejecución en caso de error
 
 STACK_VPC="equipo3-vpc"
 STACK_SG="equipo3-sg"
-STACK_S3="equipo3-s3"
 STACK_INSTANCES="equipo3-instances"
 KEY_NAME="mensagl"
 KEY_FILE="${KEY_NAME}.pem"
@@ -13,7 +12,6 @@ KEY_FILE="${KEY_NAME}.pem"
 VPC_FILE="Cloudformation-vpc.yaml"
 SG_FILE="Cloudformation-sg.yaml"
 INSTANCES_FILE="Cloudformation-ec2.yaml"
-S3_FILE="Cloudformation-s3.yaml"
 
 # Verificar si se usa --force-redeploy
 FORCE_REDEPLOY=false
@@ -37,7 +35,7 @@ echo ""
 
 # 2️ Validar sintaxis de los archivos YAML
 echo "Validando la sintaxis de los archivos YAML..."
-for file in $VPC_FILE $SG_FILE $S3_FILE $INSTANCES_FILE; do
+for file in $VPC_FILE $SG_FILE $INSTANCES_FILE; do
     aws cloudformation validate-template --template-body file://$file
     echo "$file es válido."
 done
@@ -49,7 +47,7 @@ if [ "$FORCE_REDEPLOY" = true ]; then
     echo "Eliminando stacks previos..."
     aws cloudformation delete-stack --stack-name "$STACK_INSTANCES"
     aws cloudformation delete-stack --stack-name "$STACK_SG"
-    aws cloudformation delete-stack --stack-name "$STACK_VPC"  
+    aws cloudformation delete-stack --stack-name "$STACK_VPC"
 
     echo "Esperando a que se eliminen los stacks..."
     aws cloudformation wait stack-delete-complete --stack-name "$STACK_INSTANCES" || true
@@ -76,28 +74,6 @@ echo "Security Groups creados exitosamente."
 
 echo ""
 
-# 6️ Asegurar que el bucket S3 existe (no lo borra, solo lo crea si no existe)
-BUCKET_NAME="equipo3-scripts"
-
-if aws s3 ls "s3://$BUCKET_NAME" 2>&1 | grep -q 'NoSuchBucket'; then
-    echo "El bucket S3 no existe. Creándolo..."
-    aws cloudformation create-stack --stack-name "$STACK_S3" --template-body file://$S3_FILE --capabilities CAPABILITY_NAMED_IAM
-    aws cloudformation wait stack-create-complete --stack-name "$STACK_S3"
-    echo "Bucket S3 creado exitosamente."
-else
-    echo "El bucket S3 ya existe. Saltando la creación."
-fi
-
-echo ""
-
-# 7 Subir solo los scripts nuevos/modificados a S3
-echo "Actualizando scripts en S3..."
-aws s3 sync ./scripts s3://$BUCKET_NAME/ --exact-timestamps
-echo "Actualización de scripts completada."
-
-echo ""
-
-
 # 6️ Crear las instancias EC2
 echo "Creando las instancias EC2 ($STACK_INSTANCES)..."
 aws cloudformation create-stack --stack-name "$STACK_INSTANCES" --template-body file://$INSTANCES_FILE --capabilities CAPABILITY_NAMED_IAM --parameters ParameterKey=KeyName,ParameterValue=$KEY_NAME
@@ -105,54 +81,3 @@ aws cloudformation wait stack-create-complete --stack-name "$STACK_INSTANCES"
 echo "Instancias EC2 creadas exitosamente."
 
 echo "Infraestructura desplegada con éxito."
-
-
-
-echo "Creando RDS"
-
-# RDS
-SG_DB_CMS_ID=$(aws cloudformation describe-stacks --stack-name "$STACK_SG" --query "Stacks[0].Outputs[?ExportName=='equipo3-SG-RDS-ID'].OutputValue" --output text)
-
-if [ -z "$SG_DB_CMS_ID" ]; then
-  echo "Error: No se pudo obtener el Security Group de la base de datos RDS."
-  exit 1
-fi
-
-
-echo "Creando grupo de subredes para RDS MySQL"
-    
-RDS_SUBNET_GROUP_NAME="cms-db-subnet-group"
-SUBNET_PRIVATE1_ID=$(aws cloudformation describe-stacks --stack-name "$STACK_VPC" --query "Stacks[0].Outputs[?ExportName=='equipo3-SubnetPrivate1-ID'].OutputValue" --output text)
-SUBNET_PRIVATE2_ID=$(aws cloudformation describe-stacks --stack-name "$STACK_VPC" --query "Stacks[0].Outputs[?ExportName=='equipo3-SubnetPrivate2-ID'].OutputValue" --output text)
-
-if [ -z "$SUBNET_PRIVATE1_ID" ] || [ -z "$SUBNET_PRIVATE2_ID" ]; then
-  echo "Error: No se pudieron obtener las subredes privadas de la VPC."
-  exit 1
-fi
-
-# Crear grupo de subredes para RDS MySQL
-echo "Creando grupo de subredes para RDS MySQL..."
-aws rds create-db-subnet-group \
-    --db-subnet-group-name "$RDS_SUBNET_GROUP_NAME" \
-    --db-subnet-group-description "Grupo de subredes para RDS MySQL CMS" \
-    --subnet-ids "$SUBNET_PRIVATE1_ID" "$SUBNET_PRIVATE2_ID" \
-    --tags Key=Name,Value="$RDS_SUBNET_GROUP_NAME"
-echo "Grupo de subredes creado exitosamente."
-
-# Crear instancia RDS MySQL
-echo "Creando instancia de RDS MySQL..."
-aws rds create-db-instance \
-    --db-instance-identifier "cms-database" \
-    --allocated-storage 20 \
-    --storage-type "gp2" \
-    --db-instance-class "db.t3.micro" \
-    --engine "mysql" \
-    --engine-version "8.0" \
-    --master-username "admin" \
-    --master-user-password "Admin123" \
-    --db-name "wordpress_db" \
-    --db-subnet-group-name "$RDS_SUBNET_GROUP_NAME" \
-    --vpc-security-group-ids "$SG_DB_CMS_ID" \
-    --publicly-accessible \
-    --tags Key=Name,Value="wordpress_db"
-echo "Instancia RDS MySQL creada exitosamente."

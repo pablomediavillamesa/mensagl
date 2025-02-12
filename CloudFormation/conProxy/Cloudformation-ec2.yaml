@@ -23,6 +23,7 @@ Resources:
       UserData:
         Fn::Base64: !Sub |
           #!/bin/bash
+          apt update && apt install -y awscli
           mkdir -p /home/ubuntu/scripts
           aws s3 cp s3://equipo3-scripts/hola.sh /home/ubuntu/scripts/hola.sh
           chmod +x /home/ubuntu/scripts/*.sh
@@ -45,6 +46,7 @@ Resources:
       UserData:
         Fn::Base64: !Sub |
           #!/bin/bash
+          apt update && apt install -y awscli
           mkdir -p /home/ubuntu/log
           echo "Server iniciado" > /home/ubuntu/log/haproxy.log
           chmod 644 /home/ubuntu/log/haproxy.log  
