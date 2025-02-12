@@ -10,7 +10,7 @@ sudo apt update -y
 chmod +x duckdns-ejabberd-proxy.sh
 
 echo "Ejecutando script duckdns..."
-./duckdns-ejabberd-proxy.sh
+sudo ./duckdns-ejabberd-proxy.sh
 
 echo "Instalando HAProxy y Certbot para TLS..."
 sudo apt install haproxy certbot -y
