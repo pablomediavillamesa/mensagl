@@ -23,12 +23,7 @@ Resources:
       UserData:
         Fn::Base64: !Sub |
           #!/bin/bash
-          apt update && apt install -y awscli
-          mkdir -p /home/ubuntu/scripts
-          aws s3 cp s3://equipo3-scripts/hola.sh /home/ubuntu/scripts/hola.sh
-          chmod +x /home/ubuntu/scripts/*.sh
-          /home/ubuntu/scripts/setup.sh
-
+          sudo apt update
 
   EC2ProxyAZ2:
     Type: AWS::EC2::Instance
