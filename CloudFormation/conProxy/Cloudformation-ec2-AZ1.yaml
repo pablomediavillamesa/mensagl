@@ -1,10 +1,11 @@
-WSTemplateFormatVersion: "2010-09-09"
+AWSTemplateFormatVersion: "2010-09-09"
 Description: "Stack para la creacion de instancias EC2 AZ1"
 
 Parameters:
   KeyName:
     Type: String
-    Description: "mensagl"
+    Default: "mensagl"
+    Description: "clave para ssh"
 
 Resources:
   EC2ProxyAZ1:
