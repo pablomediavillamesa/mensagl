@@ -25,10 +25,9 @@ Resources:
           #!/bin/bash
           sudo apt update
           sudo apt install unzip -y
-          wget https://github.com/pablomediavillamesa/mensagl/archive/refs/heads/main.zip -O mensagl.zip
-          unzip mensagl.zip "mensagl-main/datos_usuario/EC2ProxyAZ1/*" -d .
-          chmod +x mensagl-main/datos_usuario/EC2ProxyAZ1/haproxy-install.sh
-          ./mensagl-main/datos_usuario/EC2ProxyAZ1/haproxy-install.sh
+          git clone https://github.com/pablomediavillamesa/mensagl.git
+          cp -r mensagl/datos_usuario/EC2ProxyAZ1/ /tmp/
+          sudo rm -r -f mensagl/
 
   EC2ProxyAZ2:
     Type: AWS::EC2::Instance
@@ -45,12 +44,12 @@ Resources:
           Value: "equipo3-az2-proxy"
       UserData:
         Fn::Base64: !Sub |
+          #!/bin/bash
           sudo apt update
           sudo apt install unzip -y
-          wget https://github.com/pablomediavillamesa/mensagl/archive/refs/heads/main.zip -O mensagl.zip
-          unzip mensagl.zip "mensagl-main/datos_usuario/EC2ProxyAZ2/*" -d .
-          chmod +x mensagl-main/datos_usuario/EC2ProxyAZ2/haproxy-install.sh
-          ./mensagl-main/datos_usuario/EC2ProxyAZ2/haproxy-install.sh
+          git clone https://github.com/pablomediavillamesa/mensagl.git
+          cp -r mensagl/datos_usuario/EC2ProxyAZ2/ /tmp/
+          sudo rm -r -f mensagl/
 
   EC2Ejabberd1:
     Type: AWS::EC2::Instance
@@ -68,10 +67,11 @@ Resources:
       UserData:
         Fn::Base64: !Sub |
           #!/bin/bash
-          wget https://raw.githubusercontent.com/pablomediavillamesa/mensagl/refs/heads/main/datos_usuario/EC2Ejabberd1/instalar_ejabberdcompleto.sh -O instalar_ejabberd.sh
-          chmod +x instalar_ejabberd.sh 
-          ./instalar_ejabberd.sh
-          echo "instalacion de ejabberd completada con exito"
+          sudo apt update
+          sudo apt install unzip -y
+          git clone https://github.com/pablomediavillamesa/mensagl.git
+          cp -r mensagl/datos_usuario/EC2Ejabberd1/ /tmp/
+          sudo rm -r -f mensagl/
 
   EC2Ejabberd2:
     Type: AWS::EC2::Instance
@@ -88,6 +88,12 @@ Resources:
           Value: "equipo3-ejabberd-2"
       UserData:
         Fn::Base64: !Sub |
+          #!/bin/bash
+          sudo apt update
+          sudo apt install unzip -y
+          git clone https://github.com/pablomediavillamesa/mensagl.git
+          cp -r mensagl/datos_usuario/EC2Ejabberd2/ /tmp/
+          sudo rm -r -f mensagl/
 
   EC2PostgreSQL1:
     Type: AWS::EC2::Instance
@@ -102,6 +108,14 @@ Resources:
       Tags:
         - Key: Name
           Value: "equipo3-az1-postgresql-1"
+      UserData:
+        Fn::Base64: !Sub |
+          #!/bin/bash
+          sudo apt update
+          sudo apt install unzip -y
+          git clone https://github.com/pablomediavillamesa/mensagl.git
+          cp -r mensagl/datos_usuario/EC2PostgreSQL1/ /tmp/
+          sudo rm -r -f mensagl/
 
   EC2PostgreSQL2:
     Type: AWS::EC2::Instance
@@ -116,6 +130,14 @@ Resources:
       Tags:
         - Key: Name
           Value: "equipo3-az1-postgresql-2"
+      UserData:
+        Fn::Base64: !Sub |
+          #!/bin/bash
+          sudo apt update
+          sudo apt install unzip -y
+          git clone https://github.com/pablomediavillamesa/mensagl.git
+          cp -r mensagl/datos_usuario/EC2PostgreSQL2/ /tmp/
+          sudo rm -r -f mensagl/          
 
   EC2CMS1:
     Type: AWS::EC2::Instance
@@ -134,10 +156,11 @@ Resources:
       UserData:
         Fn::Base64: !Sub |
           #!/bin/bash
-          wget https://raw.githubusercontent.com/pablomediavillamesa/mensagl/refs/heads/main/datos_usuario/EC2CMS1/installwordpress.sh -O installwordpress.sh
-          chmod +x installwordpress.sh 
-          ./installwordpress.sh
-          echo "instalacion de wordpress completada con exito"
+          sudo apt update
+          sudo apt install unzip -y
+          git clone https://github.com/pablomediavillamesa/mensagl.git
+          cp -r mensagl/datos_usuario/EC2CMS1/ /tmp/
+          sudo rm -r -f mensagl/
 
   EC2CMS2:
     Type: AWS::EC2::Instance
@@ -153,6 +176,15 @@ Resources:
       Tags:
         - Key: Name
           Value: "equipo3-az2-cms2"
+      UserData:
+        Fn::Base64: !Sub |
+          #!/bin/bash
+          sudo apt update
+          sudo apt install unzip -y
+          git clone https://github.com/pablomediavillamesa/mensagl.git
+          cp -r mensagl/datos_usuario/EC2CMS2/ /tmp/
+          sudo rm -r -f mensagl/
+
 
 Outputs:
   EC2ProxyAZ1Id:

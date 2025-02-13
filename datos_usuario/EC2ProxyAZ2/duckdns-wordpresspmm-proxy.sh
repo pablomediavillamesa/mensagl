@@ -22,4 +22,14 @@ chmod +x duckdns.sh
 # Agregar al crontab para actualizar cada 5 minutos
 (crontab -l 2>/dev/null; echo "* * * * * $DUCKDNS_DIR/duckdns.sh >/dev/null 2>&1") | crontab -
 
+# Esperar hasta que el archivo de log indique "OK"
+echo " Esperando a que DuckDNS complete la configuración..."
+while true; do
+    if [[ -f /opt/duckdns/duckdns.log ]] && grep -q "OK" /opt/duckdns/duckdns.log; then
+        echo "✅ DuckDNS configurado correctamente."
+        break
+    fi
+    sleep 2  # Espera 2 segundos antes de volver a verificar
+done
+
 echo "DuckDNS configurado correctamente para $DOMAIN"

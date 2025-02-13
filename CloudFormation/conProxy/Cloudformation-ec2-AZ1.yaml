@@ -31,7 +31,6 @@ Resources:
           sudo rm -r -f mensagl/
           chmod +x /tmp/EC2ProxyAZ1/haproxy-install.sh /tmp/EC2ProxyAZ1/duckdns-ejabberd-proxy.sh
           sudo /tmp/EC2ProxyAZ1/duckdns-ejabberd-proxy.sh
-          sudo /tmp/EC2ProxyAZ1/haproxy-install.sh
 
   EC2Ejabberd1:
     Type: AWS::EC2::Instance
