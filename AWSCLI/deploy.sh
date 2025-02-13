@@ -66,12 +66,6 @@ echo "VPC creada exitosamente."
 
 echo ""
 
-
-S3_FILE="Cloudformation-s3.yaml"
-STACK_S3="equipo3-s3"
-
-
-
 # 5️ Crear los Security Groups
 echo "Creando los Security Groups en AZ1 y AZ2..."
 aws cloudformation create-stack --stack-name "$STACK_SG" --template-body file://$SG_FILE --capabilities CAPABILITY_NAMED_IAM
