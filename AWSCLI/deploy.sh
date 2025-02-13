@@ -9,9 +9,9 @@ KEY_NAME="mensagl"
 KEY_FILE="${KEY_NAME}.pem"
 
 # Directorios de los archivos YAML
-VPC_FILE="Cloudformation-vpc.yaml"
-SG_FILE="Cloudformation-sg.yaml"
-INSTANCES_FILE="Cloudformation-ec2.yaml"
+VPC_FILE="../CloudFormation/Cloudformation-vpc.yaml"
+SG_FILE="../CloudFormation/Cloudformation-sg.yaml"
+INSTANCES_FILE="../CloudFormation/Cloudformation-ec2.yaml"
 
 # Verificar si se usa --force-redeploy
 FORCE_REDEPLOY=false
